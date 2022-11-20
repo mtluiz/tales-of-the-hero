@@ -1,5 +1,9 @@
+P3 ?= $(shell which python3)
+P ?= $(shell which python)
+PYTHON ?= $(if $(P3), $(P3), $(P) )
+
 setup:
 	pip install -r requirements.txt
 
 run:
-	python3 main.py
+	@$(PYTHON) src/main.py
