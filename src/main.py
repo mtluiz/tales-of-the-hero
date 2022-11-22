@@ -17,7 +17,7 @@ class Game:
             pygame.quit()
             sys.exit()
 
-        self.screen.fill("black")
+        self.screen.fill((160,225,241))
         self.level.run()
         pygame.display.update()
         self.clock.tick(FPS)

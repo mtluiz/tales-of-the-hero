@@ -6,16 +6,15 @@ from debug import debug
 from utils.import_csv_layout import *
 import random
 from os import walk
+from weapon import *
 
 def import_folder(path):
   surface_list = []
   for _, __, img_files in walk(path):
     for image in sorted(img_files):
       full_path = path + '/' + image
-      
       image_surf = pygame.image.load(full_path).convert_alpha()
       surface_list.append(image_surf)
-  
   return surface_list 
 class Level:
   def __init__(self):
@@ -51,7 +50,7 @@ class Level:
               surface = graphics['objects'][int(col)]
               Tile((x,y), [self.obstacles_sprites, self.visible_sprites], 'object', surface)
 
-    self.player = Player((2000, 1430), [self.visible_sprites], self.obstacles_sprites)
+    self.player = Player((2000, 1430), [self.visible_sprites], self.obstacles_sprites, self.create_attack)
 
     # for i, row in enumerate(WORLD_MAP):
     #   for j, col in enumerate(row):
@@ -62,10 +61,12 @@ class Level:
     #     elif col == "p":
     #       self.player = Player((x, y), [self.visible_sprites], self.obstacles_sprites)
 
+  def create_attack(self):
+    Weapon(self.player, [self.visible_sprites])
+
   def run(self):
     self.visible_sprites.custom_draw(self.player)
     self.visible_sprites.update()
-    debug(self.player.direction)
 
 
 class YSortCameraGroup(pygame.sprite.Group):
@@ -76,6 +77,7 @@ class YSortCameraGroup(pygame.sprite.Group):
     self.half_width = self.surface.get_size()[0] // 2
     self.half_height = self.surface.get_size()[1] // 2
     self.offset = pygame.math.Vector2(100, 100)
+    print(self.sprites())
 
     # creating floor
     self.floor_surface = pygame.image.load('assets/graphics/tilemap/ground.png').convert()
@@ -88,7 +90,7 @@ class YSortCameraGroup(pygame.sprite.Group):
     #drawing floor
     floor_offset_pos = self.floor_rect.topleft - self.offset
     self.surface.blit(self.floor_surface, floor_offset_pos)
-
+    print(self.sprites())
     for sprite in sorted(self.sprites(), key = lambda sprite: sprite.rect.centery):
       offset_rect = sprite.rect.topleft - self.offset
       self.surface.blit(sprite.image, offset_rect)
