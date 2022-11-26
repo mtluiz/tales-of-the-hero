@@ -7,6 +7,7 @@ from utils.import_csv_layout import *
 import random
 from os import walk
 from weapon import *
+from ui import *
 
 def import_folder(path):
   surface_list = []
@@ -23,6 +24,10 @@ class Level:
     self.visible_sprites = YSortCameraGroup()
     self.obstacles_sprites = pygame.sprite.Group()
 
+    self.ui = UI()
+
+    self.current_attack = None
+    
     self.create_map()
 
   def create_map(self):
@@ -50,7 +55,7 @@ class Level:
               surface = graphics['objects'][int(col)]
               Tile((x,y), [self.obstacles_sprites, self.visible_sprites], 'object', surface)
 
-    self.player = Player((2000, 1430), [self.visible_sprites], self.obstacles_sprites, self.create_attack)
+    self.player = Player((2000, 1430), [self.visible_sprites], self.obstacles_sprites, self.create_attack, self.destroy_weapon)
 
     # for i, row in enumerate(WORLD_MAP):
     #   for j, col in enumerate(row):
@@ -60,13 +65,17 @@ class Level:
     #       Tile((x, y), [self.visible_sprites, self.obstacles_sprites])          
     #     elif col == "p":
     #       self.player = Player((x, y), [self.visible_sprites], self.obstacles_sprites)
+  def destroy_weapon(self):
+      if self.current_attack:
+          self.current_attack.kill()
 
   def create_attack(self):
-    Weapon(self.player, [self.visible_sprites])
+    self.current_attack = Weapon(self.player, [self.visible_sprites])
 
   def run(self):
     self.visible_sprites.custom_draw(self.player)
     self.visible_sprites.update()
+    self.ui.display(self.player)
 
 
 class YSortCameraGroup(pygame.sprite.Group):
@@ -90,7 +99,7 @@ class YSortCameraGroup(pygame.sprite.Group):
     #drawing floor
     floor_offset_pos = self.floor_rect.topleft - self.offset
     self.surface.blit(self.floor_surface, floor_offset_pos)
-    print(self.sprites())
+    
     for sprite in sorted(self.sprites(), key = lambda sprite: sprite.rect.centery):
       offset_rect = sprite.rect.topleft - self.offset
       self.surface.blit(sprite.image, offset_rect)
