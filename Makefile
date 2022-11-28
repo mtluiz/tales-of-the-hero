@@ -3,7 +3,7 @@ P ?= $(shell which python)
 PYTHON ?= $(if $(P3), $(P3), $(P) )
 
 setup:
-	pip install -r requirements.txt
+	@$(PYTHON) -m pip install -r requirements.txt
 
 run:
 	@$(PYTHON) src/main.py

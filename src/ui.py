@@ -26,10 +26,29 @@ class UI:
     x = self.surface.get_size()[0] - 20
     y = self.surface.get_size()[1] - 20
     text_rect = text_surface.get_rect(bottomright = (x, y))
+    pygame.draw.rect(self.surface, UI_BORDER_COLOR, text_rect.inflate(20,20))
     self.surface.blit(text_surface, text_rect)
+    pygame.draw.rect(self.surface, UI_BORDER_COLOR, text_rect.inflate(20,20), 3)
+
+  def weapon_box(self, left, top, weapon_index):
+    selection_rect = pygame.Rect(left, top, ITEM_BOX_SIZE, ITEM_BOX_SIZE)
+    weapon_items = list(weapon_data.values())
+
+    weapon_graphic = pygame.image.load(weapon_items[weapon_index]['graphic']).convert_alpha()
+    pygame.draw.rect(self.surface, UI_BG_COLOR, selection_rect.get_rect(center=(0,0)))
+    pygame.draw.rect(self.surface, UI_BORDER_COLOR, selection_rect,3)
+    self.surface.blit(weapon_graphic, weapon_graphic)
+
+  def magic_box(self, left, top, magic_index):
+    selection_rect = pygame.Rect(left, top, ITEM_BOX_SIZE, ITEM_BOX_SIZE)
+    pygame.draw.rect(self.surface, UI_BG_COLOR, selection_rect)
+    pygame.draw.rect(self.surface, UI_BORDER_COLOR, selection_rect,3)
 
   def display(self, player):
     self.show_bar(player.health, player.stats['health'], self.health_bar_rect, HEALTH_COLOR)
     self.show_bar(player.energy, player.stats['energy'], self.energy_bar_rect, ENERGY_COLOR)
 
     self.show_exp(player.exp)
+    self.weapon_box(100, 600, player.weapon_index)
+    self.magic_box(10, 600, 0)
+    
